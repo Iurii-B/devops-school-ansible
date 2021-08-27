@@ -1,0 +1,15 @@
+---
+- name: Playbook 3
+  # Uses LINEINFILE module to add lines into the file and COMMAND module to run grub2-mkconfig utility
+  user: ansible
+
+  tasks:
+  - name: Add lines to /etc/default/grub
+    lineinfile:
+      path: /etc/default/grub
+      regexp: 'GRUB_CMDLINE_LINUX'
+      line: GRUB_CMDLINE_LINUX="crashkernel=auto resume=/dev/mapper/cl-swap rd.lvm.lv=cl/root rd.lvm.lv=cl/swap rhgb quiet biosdevname=0 net.ifnames=0"
+
+  - name: Update /boot/grub2/grub.cfg using grub2-mkconfig
+    command:
+      cmd: grub2-mkconfig -o /boot/grub2/grub.cfg

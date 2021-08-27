@@ -1,0 +1,34 @@
+---
+- name: Playbook 2
+  # Uses generic PACKAGE module to install/remove packages, FIREWALLD to manage firewall rules,
+  # SERVICE module to restart services and FILE module to delete file
+  user: ansible
+
+  tasks:
+  - name: Uninstall Apache
+    package:
+      name: httpd
+      state: absent
+
+  -  name: Remove a file /var/www/html/index.html
+     file:
+       name: /var/www/html/index.html
+       state: absent
+
+
+  - name: Close HTTP on firewall
+    firewalld:
+      service: http
+      permanent: yes
+      state: disabled
+
+  - name: Close HTTPS on firewall
+    firewalld:
+      service: https
+      permanent: yes
+      state: disabled
+
+  - name: Restart service firewalld
+    service:
+      name: firewalld.service
+      state: restarted
