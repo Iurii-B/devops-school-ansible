@@ -1,0 +1,42 @@
+---
+- name: Playbook1
+  # Create users Alice, Bob, Carol and assign attributes using USER module
+  # For Alice and Bob passwords are provided in encrypted format in the playbook;
+  # Command "ansible all -i localhost, -m debug -a "msg={{ 'PASSWORD' | password_hash('sha512', 'mysecretsalt') }}"" was used for encryption
+  # For Carol the password was put into vars/carols_password file and the whole file was encrypted with Ansible Vault;
+  # Command "ansible-vault encrypt vars/carols_password --vault-password-file vault_pass" was used;
+  # Ansible Vault key is stored in the vault_pass file
+
+  user: ansible
+
+  tasks:
+  - name: create Alice and Bob with attributes
+
+    user:
+      name: "{{ item.name }}"
+      state: present
+      home: "{{ item.home }}"
+      comment: "{{ item.comment }}"
+      update_password: on_create
+      password: "{{ item.password }}"
+
+    loop:
+    - name: Alice
+      home: /home/alice
+      comment: alice@example.com
+      password: $6$mysecretsalt$ZB9R8AirQYAXhtfhOo2qdJz52FyNI6v3L6Uc3KNRP.arBKIYpcuEyQewT5qBAHoyQFwHkW6Z551Ql.cZ53GeY0
+    - name: Bob
+      home: /home/bob
+      comment: bob@example.com
+      password: $6$mysecretsalt$fqXIQu7WqiApshxMcsOKvppavfX4mM66t6BlRwMCafk2el6eM1L0uNZ.iWwGWgizzjF0pYMwSjCgntw3lkQ2E1
+
+  - name: Include variable with password from encrypted file vars/carols_password
+    include_vars: vars/carols_password
+
+  - name: create Carol
+    user:
+      name: Carol
+      home: /home/carol
+      comment: carol@example.com
+      update_password: on_create
+      password: "{{ pswd | string | password_hash('sha512') }}"
