@@ -15,6 +15,11 @@
       name: httpd
       state: started
 
+  - name: Enable service httpd
+    service:
+      name: httpd
+      enabled: yes
+
   - name: Creating a file /var/www/html/index.html
     copy:
       dest: /var/www/html/index.html
