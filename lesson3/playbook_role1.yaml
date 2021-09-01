@@ -1,0 +1,6 @@
+---
+- name: Playbook 1
+  user: ansible
+
+  roles:
+    - role: task3_role 

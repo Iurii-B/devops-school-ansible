@@ -1,0 +1,63 @@
+---
+# tasks file for task3_role2
+
+  - name: Install vsftpd
+    package:
+      name: vsftpd
+      state: latest
+
+  - name: Start service vsftpd, if not started
+    service:
+      name: vsftpd
+      state: started
+      enabled: yes
+
+  - name: Create /etc/vsftpd/vsftpd.conf file from template
+    template:
+      dest: /etc/vsftpd/vsftpd.conf
+      src: task3_vsftpd.conf_template0.j2
+    notify: Reload vsftpd
+
+  - name: Create directory for anonymous FTP upload
+    file:
+      path: /var/ftp/pub/upload/
+      owner: ftp
+      group: ftp
+      state: directory
+      seuser: system_u
+      mode: u=rwx,g=rx,o=rx
+
+  - name: Set allow_ftpd_anon_write to ON
+    seboolean:
+      name: allow_ftpd_anon_write
+      state: yes
+      persistent: yes
+
+  - name: SELinux
+    sefcontext:
+      target: /var/ftp/pub/upload
+      setype: public_content_rw_t
+      state: present
+
+  - name: Apply SELinux file context change for FTP upload directory
+    command: restorecon -R -v /var/ftp/pub/upload/
+
+  - name: Modify main FTP directory to make it read-only.
+    file:
+      path: /var/ftp/pub/
+      owner: ftp
+      group: ftp
+      state: directory
+      mode: u=rx,g=rx,o=rx
+
+  - name: Open FTP on firewall
+    firewalld:
+      service: ftp
+      permanent: yes
+      state: enabled
+
+  - name: Restart service firewalld
+    service:
+      name: firewalld.service
+      state: restarted
+

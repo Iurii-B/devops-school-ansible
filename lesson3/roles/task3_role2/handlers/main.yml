@@ -1,0 +1,6 @@
+---
+# handlers file for task3_role
+- name: Reload vsftpd 
+  service:
+    name: vsftpd
+    state: restarted

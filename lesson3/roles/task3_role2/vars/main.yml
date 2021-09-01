@@ -1,0 +1,7 @@
+---
+# vars file for task3_role2
+
+var_anon_enable: 'yes'
+var_local_enable: 'no'
+var_no_anon_password: 'yes'
+var_anon_upload: 'yes'

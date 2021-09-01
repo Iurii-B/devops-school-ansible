@@ -1,0 +1,30 @@
+---
+# tasks file for task3_role
+
+  - name: Install Apache
+    package:
+      name: httpd
+      state: latest
+    notify: Start Apache
+
+  - name: Creating a file /var/www/html/index.html
+    template:
+      src: task3_apache_template0.yaml
+      dest: /var/www/html/index.html
+      
+  - name: Open HTTP on firewall
+    firewalld:
+      service: http
+      permanent: yes
+      state: enabled
+
+  - name: Open HTTPS on firewall
+    firewalld:
+      service: https
+      permanent: yes
+      state: enabled
+
+  - name: Restart service firewalld
+    service:
+      name: firewalld.service
+      state: restarted
